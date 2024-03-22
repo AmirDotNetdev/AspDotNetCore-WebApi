@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
 using api.Dtos.Stocks;
+using api.Helpers;
 using api.Interfaces;
 using api.Mappers;
 using api.Models;
@@ -38,9 +39,18 @@ namespace api.Repository
             return existingStock;
         }
 
-        public async Task<List<Stock>> GetAllAsync()
+        public async Task<List<Stock>> GetAllAsync(QueryObject query)
         {
-            return await _context.Stocks.Include(c => c.Comment).ToListAsync();
+            var stocks = _context.Stocks.Include(c => c.Comment).AsQueryable();
+            if(! string.IsNullOrWhiteSpace(query.CompanyName))
+            {
+                stocks = stocks.Where(c => c.CompanyName.Contains(query.CompanyName));
+            }
+            if(! string.IsNullOrWhiteSpace(query.Symbol))
+            {
+                stocks = stocks.Where(s => s.Symbol.Contains(query.Symbol));
+            }
+            return await stocks.ToListAsync();
         }
 
         public async Task<Stock?> GetById(int id)
