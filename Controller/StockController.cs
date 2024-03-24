@@ -7,6 +7,7 @@ using api.Dtos.Stocks;
 using api.Helpers;
 using api.Interfaces;
 using api.Mappers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,6 +26,7 @@ namespace api.Controller
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GettAll([FromQuery] QueryObject query)
         {
             var stocks = await _stockRepo.GetAllAsync(query);
